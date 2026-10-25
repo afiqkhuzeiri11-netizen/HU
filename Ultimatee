@@ -1,0 +1,315 @@
+-- ==========================================
+-- ANIME ELITE HUB - BUG-FREE & OPTIMIZED
+-- Delta Executor Ready
+-- ==========================================
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local localPlayer = Players.LocalPlayer
+
+-- Hapus GUI lama dengan aman jika ada agar tidak menumpuk
+pcall(function()
+    if CoreGui:FindFirstChild("AnimeEliteHub") then
+        CoreGui.AnimeEliteHub:Destroy()
+    end
+end)
+
+-- ==========================================
+-- 1. BYPASS TINGKAT NASA (ANTI-KICK SAFE)
+-- ==========================================
+pcall(function()
+    if getrawmetatable and setreadonly then
+        local mt = getrawmetatable(game)
+        local oldNamecall = mt.__namecall
+        setreadonly(mt, false)
+        mt.__namecall = newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            if method and (method:lower() == "kick") then
+                return -- Blokir upaya kick dari game
+            end
+            return oldNamecall(self, ...)
+        end)
+        setreadonly(mt, true)
+    end
+end)
+
+-- ==========================================
+-- 2. KONFIGURASI UTAMA
+-- ==========================================
+-- [PENTING] Ganti Vector3 ini dengan koordinat (X, Y, Z) plot/base Anda di game!
+local plotPosition = Vector3.new(0, 5, 0) 
+
+-- ==========================================
+-- 3. DESAIN GUI ELEGAN & ESTETIK (ANIME)
+-- ==========================================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AnimeEliteHub"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+MainFrame.Position = UDim2.new(0.5, -190, 0.5, -150)
+MainFrame.Size = UDim2.new(0, 380, 0, 310)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Parent = MainFrame
+MainStroke.Color = Color3.fromRGB(255, 105, 180)
+MainStroke.Thickness = 2
+
+local AnimeBg = Instance.new("ImageLabel")
+AnimeBg.Name = "AnimeBackground"
+AnimeBg.Parent = MainFrame
+AnimeBg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+AnimeBg.BackgroundTransparency = 1
+AnimeBg.Size = UDim2.new(1, 0, 1, 0)
+AnimeBg.Image = "rbxassetid://6023426915"
+AnimeBg.ScaleType = Enum.ScaleType.Crop
+
+local Overlay = Instance.new("Frame")
+Overlay.Parent = AnimeBg
+Overlay.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+Overlay.BackgroundTransparency = 0.55
+Overlay.Size = UDim2.new(1, 0, 1, 0)
+
+local Header = Instance.new("Frame")
+Header.Parent = MainFrame
+Header.BackgroundTransparency = 1
+Header.Size = UDim2.new(1, 0, 0, 45)
+
+local Title = Instance.new("TextLabel")
+Title.Parent = Header
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Size = UDim2.new(0.7, 0, 1, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🌸 ANIME ELITE HUB 🌸"
+Title.TextColor3 = Color3.fromRGB(255, 220, 235)
+Title.TextSize = 15
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+local MinBtn = Instance.new("TextButton")
+MinBtn.Parent = Header
+MinBtn.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+MinBtn.Position = UDim2.new(1, -40, 0, 10)
+MinBtn.Size = UDim2.new(0, 26, 0, 26)
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.Text = "-"
+MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinBtn.TextSize = 16
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 8)
+MinCorner.Parent = MinBtn
+
+local OpenBtn = Instance.new("TextButton")
+OpenBtn.Parent = ScreenGui
+OpenBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+OpenBtn.Position = UDim2.new(0, 15, 0.5, -25)
+OpenBtn.Size = UDim2.new(0, 50, 0, 50)
+OpenBtn.Font = Enum.Font.GothamBold
+OpenBtn.Text = "🌸"
+OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenBtn.TextSize = 24
+OpenBtn.Visible = false
+OpenBtn.Active = true
+OpenBtn.Draggable = true
+
+local OpenCorner = Instance.new("UICorner")
+OpenCorner.CornerRadius = UDim.new(1, 0)
+OpenCorner.Parent = OpenBtn
+
+local OpenStroke = Instance.new("UIStroke")
+OpenStroke.Parent = OpenBtn
+OpenStroke.Color = Color3.fromRGB(255, 255, 255)
+OpenStroke.Thickness = 2
+
+MinBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    OpenBtn.Visible = true
+end)
+
+OpenBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    OpenBtn.Visible = false
+end)
+
+local Container = Instance.new("ScrollingFrame")
+Container.Parent = MainFrame
+Container.BackgroundTransparency = 1
+Container.Position = UDim2.new(0, 12, 0, 50)
+Container.Size = UDim2.new(1, -24, 1, -60)
+Container.CanvasSize = UDim2.new(0, 0, 0, 280)
+Container.ScrollBarThickness = 3
+
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Parent = Container
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 10)
+
+-- Fungsi Pembuat Tombol Aman dari Error
+local function createStyledButton(name, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Parent = Container
+    Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    Btn.BackgroundTransparency = 0.35
+    Btn.Size = UDim2.new(1, 0, 0, 40)
+    Btn.Font = Enum.Font.GothamSemibold
+    Btn.Text = name
+    Btn.TextColor3 = Color3.fromRGB(240, 240, 250)
+    Btn.TextSize = 13
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 10)
+    BtnCorner.Parent = Btn
+    
+    local BtnStroke = Instance.new("UIStroke")
+    BtnStroke.Parent = Btn
+    BtnStroke.Color = Color3.fromRGB(255, 105, 180)
+    BtnStroke.Transparency = 0.5
+    BtnStroke.Thickness = 1
+    
+    Btn.MouseButton1Click:Connect(function()
+        pcall(function()
+            local tween = TweenService:Create(Btn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(255, 105, 180)})
+            tween:Play()
+        end)
+        task.wait(0.1)
+        pcall(function()
+            local tweenBack = TweenService:Create(Btn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 30, 45)})
+            tweenBack:Play()
+        end)
+        
+        -- Bungkus callback dengan pcall agar script utama tidak crash jika terjadi error mendadak
+        local success, err = pcall(callback)
+        if not success then
+            warn("Aksi tombol gagal: ", err)
+        end
+    end)
+end
+
+-- ==========================================
+-- 4. IMPLEMENTASI FITUR (BUG-FREE & SECURE)
+-- ==========================================
+
+-- Fitur 1: Curi Telur + Teleport ke Plot (Inventory Safe)
+createStyledButton("🥚 Curi Telur & Teleport Plot", function()
+    local character = localPlayer.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    local rootPart = character.HumanoidRootPart
+    
+    local closestEgg = nil
+    local shortestDistance = math.huge
+
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj and obj.Name and obj.Name:lower():find("egg") and (obj:IsA("BasePart") or obj:IsA("Model")) then
+            local part = obj:IsA("Model") and (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")) or obj
+            if part and part:IsA("BasePart") then
+                local distance = (rootPart.Position - part.Position).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestEgg = obj
+                end
+            end
+        end
+    end
+
+    if closestEgg then
+        local eggPart = closestEgg:IsA("Model") and (closestEgg.PrimaryPart or closestEgg:FindFirstChildWhichIsA("BasePart")) or closestEgg
+        if eggPart and eggPart:IsA("BasePart") then
+            rootPart.CFrame = eggPart.CFrame + Vector3.new(0, 2, 0)
+            task.wait(0.15)
+            
+            local prompt = closestEgg:FindFirstChildWhichIsA("ProximityPrompt", true)
+            local clickDetector = closestEgg:FindFirstChildWhichIsA("ClickDetector", true)
+            if prompt then 
+                pcall(function() fireproximityprompt(prompt) end)
+            elseif clickDetector then 
+                pcall(function() fireclickdetector(clickDetector) end)
+            end
+            
+            task.wait(0.15)
+            
+            if closestEgg:IsA("Model") then
+                pcall(function() closestEgg:MoveTo(plotPosition + Vector3.new(0, 3, 0)) end)
+            else
+                pcall(function() closestEgg.CFrame = CFrame.new(plotPosition + Vector3.new(0, 3, 0)) end)
+            end
+            
+            rootPart.CFrame = CFrame.new(plotPosition + Vector3.new(0, 4, 0))
+        end
+    end
+end)
+
+-- Fitur 2: Tarik Semua Player ke Posisi Kita (Safe Check)
+createStyledButton("👥 Tarik Semua Player ke Sini", function()
+    local myChar = localPlayer.Character
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
+    local myPos = myChar.HumanoidRootPart.CFrame
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character then
+            pcall(function()
+                local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                local targetHum = player.Character:FindFirstChildOfClass("Humanoid")
+                if targetRoot and targetHum and targetHum.Health > 0 then
+                    targetRoot.CFrame = myPos + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3))
+                end
+            end)
+        end
+    end
+end)
+
+-- Fitur 3: Speed 200 (Bypass NASA / Anti-Rollback Clean Loop)
+local speedEnabled = false
+local speedConnection = nil
+
+createStyledButton("⚡ Aktifkan Speed 200 (Bypass NASA)", function()
+    speedEnabled = not speedEnabled
+    
+    if speedEnabled then
+        if speedConnection then 
+            speedConnection:Disconnect() 
+            speedConnection = nil 
+        end
+        
+        speedConnection = RunService.RenderStepped:Connect(function()
+            pcall(function()
+                local char = localPlayer.Character
+                if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChildOfClass("Humanoid") then
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    local rootPart = char.HumanoidRootPart
+                    if hum.MoveDirection.Magnitude > 0 then
+                        rootPart.CFrame = rootPart.CFrame + (hum.MoveDirection * 1.8)
+                    end
+                end
+            end)
+        end)
+    else
+        if speedConnection then
+            speedConnection:Disconnect()
+            speedConnection = nil
+        end
+    end
+end)
+
+-- Fitur 4: Tutup GUI Total (Membersihkan Koneksi Memory)
+createStyledButton("❌ Tutup GUI Total", function()
+    if speedConnection then 
+        speedConnection:Disconnect() 
+        speedConnection = nil 
+    end
+    pcall(function()
+        ScreenGui:Destroy()
+    end)
+end)
