@@ -1,5 +1,5 @@
 -- ==========================================
--- ULTIMATE ELITE HUB - FINAL ALL-IN-ONE (BUG FREE)
+-- ULTIMATE ELITE HUB - STRONG ANTI-GUARD FIX
 -- Delta Executor Ready
 -- ==========================================
 local Players = game:GetService("Players")
@@ -8,7 +8,7 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local localPlayer = Players.LocalPlayer
 
--- Hapus GUI lama dengan aman agar tidak menumpuk
+-- Hapus GUI lama dengan aman jika ada agar tidak menumpuk
 pcall(function()
     if CoreGui:FindFirstChild("UltimateEliteHub") then
         CoreGui.UltimateEliteHub:Destroy()
@@ -34,7 +34,7 @@ pcall(function()
     end
 end)
 
--- God Mode Loop yang Aman dari Error
+-- God Mode Loop
 local godModeConnection = RunService.Stepped:Connect(function()
     pcall(function()
         local char = localPlayer.Character
@@ -169,7 +169,6 @@ UIListLayout.Parent = Container
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0, 10)
 
--- Fungsi Pembuat Tombol Elegan dengan Error Handling Aman
 local function createStyledButton(name, callback)
     local Btn = Instance.new("TextButton")
     Btn.Parent = Container
@@ -210,31 +209,39 @@ local function createStyledButton(name, callback)
 end
 
 -- ==========================================
--- 4. IMPLEMENTASI FITUR (BUG-FREE & SECURE)
+-- 4. IMPLEMENTASI FITUR (STRONG ANTI-GUARD)
 -- ==========================================
 
--- Fungsi Melumpuhkan Guard
+-- Fungsi Anti-Guard Kuat: Melumpuhkan SEMUA NPC/Model bergerak yang bukan Player di Workspace
 local function bypassGuards()
     pcall(function()
+        local myChar = localPlayer.Character
+        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        
         for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj and obj.Name then
-                local nameLower = obj.Name:lower()
-                if nameLower:find("guard") or nameLower:find("police") or nameLower:find("enemy") or nameLower:find("npc") or nameLower:find("monster") then
-                    if obj:IsA("Model") then
-                        local humanoid = obj:FindFirstChildOfClass("Humanoid")
-                        local rootPart = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
-                        if humanoid then
-                            pcall(function()
-                                humanoid.WalkSpeed = 0
-                                humanoid.JumpPower = 0
-                                humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                            end)
+            if obj and obj:IsA("Model") and obj ~= myChar then
+                local humanoid = obj:FindFirstChildOfClass("Humanoid")
+                local rootPart = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+                
+                -- Cek apakah objek ini adalah NPC (Memiliki Humanoid tapi bukan bagian dari Players)
+                if humanoid and rootPart and rootPart:IsA("BasePart") then
+                    local isPlayer = false
+                    for _, p in ipairs(Players:GetPlayers()) do
+                        if p.Character == obj then
+                            isPlayer = true
+                            break
                         end
-                        if rootPart and rootPart:IsA("BasePart") then
-                            pcall(function()
-                                rootPart.CFrame = rootPart.CFrame + Vector3.new(0, -500, 0)
-                            end)
-                        end
+                    end
+                    
+                    -- Jika bukan player, berarti NPC / Guard / Musuh -> Lumpuhkan total!
+                    if not isPlayer then
+                        pcall(function()
+                            humanoid.WalkSpeed = 0
+                            humanoid.JumpPower = 0
+                            humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+                            -- Hapus target atau buang jauh ke bawah agar tidak bisa mendeteksi player
+                            rootPart.CFrame = rootPart.CFrame + Vector3.new(0, -2000, 0)
+                        end)
                     end
                 end
             end
@@ -321,7 +328,7 @@ createStyledButton("💀 Real Kill All Players (Server Damage)", function()
     end)
 end)
 
--- Fitur 3: Toggle Anti-Guard
+-- Fitur 3: Toggle Anti-Guard (Sistem Baru: Melumpuhkan SEMUA NPC di Workspace)
 local antiGuardActive = false
 local guardConnection = nil
 
@@ -390,7 +397,7 @@ createStyledButton("⚡ Aktifkan Speed 200 (Bypass NASA)", function()
     end
 end)
 
--- Fitur 6: Tutup GUI Total (Pembersihan Memory Leak / Connections)
+-- Fitur 6: Tutup GUI Total
 createStyledButton("❌ Tutup GUI Total", function()
     if speedConnection then 
         speedConnection:Disconnect() 
